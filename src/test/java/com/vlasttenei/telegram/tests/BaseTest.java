@@ -2,26 +2,26 @@ package com.vlasttenei.telegram.tests;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
+import com.vlasttenei.telegram.driver.WebDriverSingleton;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class BaseTest {
-    protected static WebDriver driver; // Делаем driver статическим
+    protected static WebDriver driver;
+    private static final Logger LOGGER = Logger.getLogger(BaseTest.class.getName());
 
     @BeforeSuite
-    public void setUp() {
-        if (driver == null) { // Запускаем браузер только если он ещё не запущен
-            WebDriverManager.chromedriver().setup();
-            driver = new ChromeDriver();
-        }
+    public void setUpSuite() {
+        LOGGER.info("Настройка ChromeDriver...");
+        WebDriverManager.chromedriver().setup();
     }
 
-    @AfterSuite
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-            driver = null; // Обнуляем driver после завершения всех тестов
-        }
+    @BeforeMethod
+    public void setUp() {
+        LOGGER.info("Инициализация WebDriver...");
+        driver = WebDriverSingleton.getDriver();
     }
 }
