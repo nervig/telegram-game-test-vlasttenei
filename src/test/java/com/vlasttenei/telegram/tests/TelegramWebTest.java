@@ -26,7 +26,8 @@ public class TelegramWebTest extends BaseTest {
     }
 
     @Test(
-            priority = 1
+            priority = 1,
+            description = "Авторизация в Telegram Web"
     )
     public void loginToTelegramWeb() throws InterruptedException {
         driver.get("https://web.telegram.org/");
@@ -49,7 +50,8 @@ public class TelegramWebTest extends BaseTest {
                 return;
             }
 
-            phoneInput = (WebElement)wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='sign-in-phone-number']")));
+            phoneInput = (WebElement)wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//input[@id='sign-in-phone-number'] | //span[@class='i18n' and text()='Phone Number']/ancestor::div[contains(@class, 'input-field-phone')]//div[contains(@class, 'input-field-input')]")));
             phoneInput.sendKeys(new CharSequence[]{"+9604771761"});
             LOGGER.info("Введён номер телефона.");
             WebElement nextButton = driver.findElement(By.xpath("//button[contains(@class,'Button smaller primary')]"));
@@ -65,13 +67,17 @@ public class TelegramWebTest extends BaseTest {
             if (this.isLoggedIn()) {
                 LOGGER.info("✅ Авторизация успешна. Сохраняем cookies.");
                 this.saveCookies();
+                
+                try {
+                    CheckingCatalogTest catalogTest = new CheckingCatalogTest();
+                    catalogTest.startGame1();
+                    LOGGER.info("✅ Игра успешно запущена.");
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Ошибка при запуске игры.", e);
+                }
             } else {
                 LOGGER.severe("❌ Авторизация не удалась!");
             }
-
-            CheckingCatalogTest checkingCatalogTest = new CheckingCatalogTest();
-            checkingCatalogTest.startGame1();
-            Thread.sleep(15000L);
         }
     }
 
@@ -88,7 +94,7 @@ public class TelegramWebTest extends BaseTest {
     }
 
     private void saveCookies() {
-        File file = new File("telegram_cookies.data");
+        File file = new File(COOKIE_FILE);
 
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
@@ -125,7 +131,7 @@ public class TelegramWebTest extends BaseTest {
     }
 
     private void loadCookies() {
-        File file = new File("telegram_cookies.data");
+        File file = new File(COOKIE_FILE);
         if (!file.exists()) {
             LOGGER.info("Файл cookies не найден. Вход будет выполнен вручную.");
         } else {
