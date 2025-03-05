@@ -34,14 +34,14 @@ public class BaseTest {
         try {         
             // Ищем бота по названию
             WebElement chatItem = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//span[text()='Зов Теней - Тест'] | //img[@alt='Зов Теней - Тест']")));
+                By.xpath("//span[text()='Зов Теней - Тест'] | //img[@alt='Зов Теней - Тест']/ancestor::a")));
             chatItem.click();
             LOGGER.info("Открыт чат с ботом.");
             
             // Теперь ищем кнопку игры
             WebElement gameButton = wait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//span[text()='Профиль'] ")));
-            gameButton.click();
+                By.xpath("//span[text()='Профиль']")));
+            // gameButton.click();
             LOGGER.info("Игра запущена.");
             
         } catch (Exception e) {
