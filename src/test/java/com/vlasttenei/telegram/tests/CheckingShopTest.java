@@ -13,7 +13,7 @@ public class CheckingShopTest extends BaseTest {
     public void startGame2() {
         LOGGER.info("Запуск игры");
         checkThatGameIsOpen();
-        shopButton = driver.findElement(By.xpath("//span[contains(text(), 'Лавка ❘←')]"));
+        shopButton = driver.findElement(By.xpath("//span[contains(text(), 'Лавка ❘←')]/ancestor::button"));
         shopButton.click();
     }
 }
