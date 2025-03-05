@@ -22,9 +22,18 @@ public class WebDriverSingleton {
             LOGGER.info("Инициализация драйвера Chrome...");
             
             try {
+                killChromeProcesses();
+                cleanProfileIfNeeded();
+                
                 ChromeOptions options = new ChromeOptions();
                 options.addArguments("--user-data-dir=" + USER_DATA_DIR);
-                options.addArguments("--disable-extensions");
+                // options.addArguments("--start-maximized");
+                options.addArguments("--remote-debugging-port=9222");
+                options.addArguments("--no-sandbox");
+                options.addArguments("--disable-gpu");
+                options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+                options.setExperimentalOption("detach", true);
+                
                 driver = new ChromeDriver(options);
                 driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
                 originalWindowHandle = driver.getWindowHandle();
