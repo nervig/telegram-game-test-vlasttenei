@@ -3,12 +3,11 @@ package com.vlasttenei.telegram.driver;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.File;
-import java.io.IOException;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public class WebDriverSingleton {
@@ -29,6 +28,7 @@ public class WebDriverSingleton {
                 ChromeOptions options = new ChromeOptions();
                 options.setExperimentalOption("debuggerAddress", "localhost:" + DEBUG_PORT);
                 driver = new ChromeDriver(options);
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
                 originalWindowHandle = driver.getWindowHandle();
                 LOGGER.info("Подключились к существующей сессии Chrome");
                 return driver;
@@ -50,7 +50,7 @@ public class WebDriverSingleton {
                 ChromeOptions options = new ChromeOptions();
                 options.setExperimentalOption("debuggerAddress", "localhost:" + DEBUG_PORT);
                 driver = new ChromeDriver(options);
-                driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
                 originalWindowHandle = driver.getWindowHandle();
                 LOGGER.info("Создана новая сессия Chrome с профилем: " + USER_DATA_DIR);
                 
@@ -68,7 +68,7 @@ public class WebDriverSingleton {
                     options.addArguments("--disable-dev-shm-usage");
                     
                     driver = new ChromeDriver(options);
-                    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+                    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
                     originalWindowHandle = driver.getWindowHandle();
                     LOGGER.info("Сессия Chrome создана после очистки");
                 } catch (Exception retryEx) {
