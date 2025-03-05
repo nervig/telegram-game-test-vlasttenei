@@ -85,7 +85,7 @@ public class TelegramWebTest extends BaseTest {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10L));
 
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'chat-list custom-scroll')]")));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Зов Теней - Тест'] | //img[@alt='Зов Теней - Тест']")));
             return true;
         } catch (Exception var3) {
             LOGGER.log(Level.WARNING, "Элемент чата не найден, пользователь не авторизован.", var3);
