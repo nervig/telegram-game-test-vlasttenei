@@ -27,10 +27,11 @@ public class WebDriverSingleton {
                 
                 ChromeOptions options = new ChromeOptions();
                 options.addArguments("--user-data-dir=" + USER_DATA_DIR);
-                // options.addArguments("--start-maximized");
                 options.addArguments("--remote-debugging-port=9222");
                 options.addArguments("--no-sandbox");
                 options.addArguments("--disable-gpu");
+                options.addArguments("--auto-open-devtools-for-tabs");
+                options.addArguments("--window-size=1920,1080");
                 options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
                 options.setExperimentalOption("detach", true);
                 
@@ -47,6 +48,16 @@ public class WebDriverSingleton {
             try {
                 // Проверяем, что окно все еще доступно
                 driver.getWindowHandle();
+                
+                // Проверяем и восстанавливаем связь с DOM
+                try {
+                    driver.getCurrentUrl();
+                } catch (Exception e) {
+                    LOGGER.warning("Связь с DOM потеряна, перезагружаем страницу");
+                    driver.navigate().refresh();
+                    Thread.sleep(2000); // Даем время на загрузку
+                }
+                
                 LOGGER.info("Использование существующей сессии Chrome");
                 return driver;
             } catch (Exception e) {
