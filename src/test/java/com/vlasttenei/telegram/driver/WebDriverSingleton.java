@@ -3,12 +3,10 @@ package com.vlasttenei.telegram.driver;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import java.util.Set;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.File;
-import java.io.IOException;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public class WebDriverSingleton {
@@ -16,7 +14,6 @@ public class WebDriverSingleton {
     private static String originalWindowHandle;
     private static final Logger LOGGER = Logger.getLogger(WebDriverSingleton.class.getName());
     private static final String USER_DATA_DIR = System.getProperty("user.dir") + File.separator + "chrome-profile";
-    private static final String DEBUG_PORT = "9222";
 
     private WebDriverSingleton() {}
 
@@ -24,76 +21,52 @@ public class WebDriverSingleton {
         if (driver == null || isSessionClosed()) {
             LOGGER.info("Инициализация драйвера Chrome...");
             
-            // Сначала пытаемся подключиться к существующей сессии
             try {
+                killChromeProcesses();
+                cleanProfileIfNeeded();
+                
                 ChromeOptions options = new ChromeOptions();
-                options.setExperimentalOption("debuggerAddress", "localhost:" + DEBUG_PORT);
+                options.addArguments("--user-data-dir=" + USER_DATA_DIR);
+                options.addArguments("--remote-debugging-port=9222");
+                options.addArguments("--no-sandbox");
+                options.addArguments("--disable-gpu");
+                // options.addArguments("--auto-open-devtools-for-tabs");
+                options.addArguments("--window-size=1920,1080");
+                options.addArguments("--restore-last-session");
+                options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+                options.setExperimentalOption("detach", true);
+                
                 driver = new ChromeDriver(options);
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
                 originalWindowHandle = driver.getWindowHandle();
-                LOGGER.info("Подключились к существующей сессии Chrome");
+                LOGGER.info("Создана новая сессия Chrome");
                 return driver;
             } catch (Exception e) {
-                LOGGER.info("Не удалось подключиться к существующей сессии, создаем новую");
-                killChromeProcesses();
-            }
-
-            try {
-                // Запускаем Chrome с отладочным портом
-                ProcessBuilder processBuilder = new ProcessBuilder(
-                    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-                    "--remote-debugging-port=" + DEBUG_PORT,
-                    "--user-data-dir=" + USER_DATA_DIR
-                );
-                processBuilder.start();
-                Thread.sleep(2000); // Даем Chrome время на запуск
-
-                ChromeOptions options = new ChromeOptions();
-                options.setExperimentalOption("debuggerAddress", "localhost:" + DEBUG_PORT);
-                driver = new ChromeDriver(options);
-                driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-                originalWindowHandle = driver.getWindowHandle();
-                LOGGER.info("Создана новая сессия Chrome с профилем: " + USER_DATA_DIR);
-                
-            } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Ошибка при создании сессии Chrome: " + e.getMessage(), e);
-                try {
-                    killChromeProcesses();
-                    cleanProfileIfNeeded();
-                    
-                    // Последняя попытка с базовыми настройками
-                    ChromeOptions options = new ChromeOptions();
-                    options.addArguments("--remote-debugging-port=" + DEBUG_PORT);
-                    options.addArguments("--user-data-dir=" + USER_DATA_DIR);
-                    options.addArguments("--no-sandbox");
-                    options.addArguments("--disable-dev-shm-usage");
-                    
-                    driver = new ChromeDriver(options);
-                    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-                    originalWindowHandle = driver.getWindowHandle();
-                    LOGGER.info("Сессия Chrome создана после очистки");
-                } catch (Exception retryEx) {
-                    LOGGER.log(Level.SEVERE, "Не удалось создать сессию Chrome: " + retryEx.getMessage());
-                    throw new RuntimeException("Не удалось инициализировать ChromeDriver", retryEx);
-                }
+                throw new RuntimeException("Не удалось инициализировать ChromeDriver", e);
             }
         } else {
             try {
-                Set<String> handles = driver.getWindowHandles();
-                if (handles.contains(originalWindowHandle)) {
-                    driver.switchTo().window(originalWindowHandle);
-                    LOGGER.info("Переключились на оригинальное окно");
-                } else {
-                    LOGGER.warning("Оригинальное окно не найдено, пересоздаем сессию");
-                    resetDriver();
-                    return getDriver();
+                // Проверяем, что окно все еще доступно
+                driver.getWindowHandle();
+                
+                // Проверяем и восстанавливаем связь с DOM
+                try {
+                    driver.getCurrentUrl();
+                } catch (Exception e) {
+                    LOGGER.warning("Связь с DOM потеряна, перезагружаем страницу");
+                    driver.navigate().refresh();
+                    Thread.sleep(2000); // Даем время на загрузку
                 }
+                
+                LOGGER.info("Использование существующей сессии Chrome");
+                return driver;
             } catch (Exception e) {
-                LOGGER.warning("Ошибка при работе с окнами: " + e.getMessage());
+                LOGGER.warning("Существующая сессия недоступна, создаем новую: " + e.getMessage());
                 resetDriver();
                 return getDriver();
             }
         }
-        return driver;
     }
 
     private static void killChromeProcesses() {
@@ -138,11 +111,10 @@ public class WebDriverSingleton {
     private static boolean isSessionClosed() {
         if (driver == null) return true;
         try {
-            driver.getCurrentUrl();
-            Set<String> handles = driver.getWindowHandles();
-            return handles.isEmpty();
+            // Проверяем только наличие окон, без дополнительных действий
+            return driver.getWindowHandles().isEmpty();
         } catch (Exception e) {
-            LOGGER.warning("Сессия закрыта или недоступна: " + e.getMessage());
+            LOGGER.warning("Ошибка при проверке сессии: " + e.getMessage());
             return true;
         }
     }

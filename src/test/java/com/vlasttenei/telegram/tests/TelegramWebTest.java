@@ -51,10 +51,10 @@ public class TelegramWebTest extends BaseTest {
             }
 
             phoneInput = (WebElement)wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//input[@id='sign-in-phone-number'] | //span[@class='i18n' and text()='Phone Number']/ancestor::div[contains(@class, 'input-field-phone')]//div[contains(@class, 'input-field-input')]")));
+                By.xpath("//input[@id='sign-in-phone-number'] | //label[span[text()='Phone Number']]/preceding-sibling::div[contains(@class, 'input-field-input')]")));
             phoneInput.sendKeys(new CharSequence[]{"+9604771761"});
             LOGGER.info("Введён номер телефона.");
-            WebElement nextButton = driver.findElement(By.xpath("//button[contains(@class,'Button smaller primary')]"));
+            WebElement nextButton = driver.findElement(By.xpath("//button[contains(@class,'Button smaller primary')] | //button[.//span[text()='Next']]"));
             nextButton.click();
             LOGGER.info("Нажата кнопка 'Далее'.");
 
@@ -85,7 +85,7 @@ public class TelegramWebTest extends BaseTest {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10L));
 
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'chat-list custom-scroll')]")));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Зов Теней - Тест'] | //img[@alt='Зов Теней - Тест']")));
             return true;
         } catch (Exception var3) {
             LOGGER.log(Level.WARNING, "Элемент чата не найден, пользователь не авторизован.", var3);
