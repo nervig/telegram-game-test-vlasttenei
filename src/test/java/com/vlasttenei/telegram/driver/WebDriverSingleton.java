@@ -30,8 +30,9 @@ public class WebDriverSingleton {
                 options.addArguments("--remote-debugging-port=9222");
                 options.addArguments("--no-sandbox");
                 options.addArguments("--disable-gpu");
-                options.addArguments("--auto-open-devtools-for-tabs");
+                // options.addArguments("--auto-open-devtools-for-tabs");
                 options.addArguments("--window-size=1920,1080");
+                options.addArguments("--restore-last-session");
                 options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
                 options.setExperimentalOption("detach", true);
                 
