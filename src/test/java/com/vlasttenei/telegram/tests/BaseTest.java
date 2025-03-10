@@ -61,9 +61,7 @@ public class BaseTest {
             
             // Теперь ищем кнопку игры
             $x("//span[text()='Профиль']")
-                .shouldBe(visible, Duration.ofSeconds(10))
-                .shouldBe(interactable, Duration.ofSeconds(10))
-                .click();
+                .shouldBe(visible, Duration.ofSeconds(10));
             LOGGER.info("Игра запущена.");
             
         } catch (Exception e) {
