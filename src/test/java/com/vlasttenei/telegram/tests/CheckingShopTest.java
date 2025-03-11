@@ -7,16 +7,22 @@ import java.util.logging.Logger;
 import com.codeborne.selenide.Selenide;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.Condition.*;
+import io.qameta.allure.*;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import com.vlasttenei.telegram.pages.ShopPageLocators;
 
+@Epic("Игровой магазин")
+@Feature("Покупка осколков вечности")
 public class CheckingShopTest extends BaseTest {
     private static final Logger LOGGER = Logger.getLogger(CheckingShopTest.class.getName());
     WebElement shopButton;
 
     @Test(priority = 3)
+    @Story("Проверка покупки всех наборов осколков")
+    @Description("Тест проверяет возможность покупки всех доступных наборов осколков вечности")
+    @Severity(SeverityLevel.CRITICAL)
     public void startGame2() {
         BigDecimal costOfSmallPack = new BigDecimal(27);
         BigDecimal costOfMediumPack = new BigDecimal(81);
@@ -63,6 +69,7 @@ public class CheckingShopTest extends BaseTest {
         $x(ShopPageLocators.SMALL_PACK_DESC)
                 .shouldBe(visible)
                 .click();
+        sleep(3000);
         // Проверяем количество инвентаря после покупки малого набора
         BigDecimal crystalsAfterPay = new BigDecimal($x(ShopPageLocators.COINS_ITEM_1).getText().replace(",", ""));
         System.out.println("crystalsAfterPay: " + crystalsAfterPay);
@@ -74,12 +81,14 @@ public class CheckingShopTest extends BaseTest {
         System.out.println("coins: " + coins);
 
         Assert.assertEquals(crystalsAfterPay, crystals);
-        LOGGER.info("Проверка количества кристаллов прошла успешно после покупки малого набора: " + crystalsAfterPay + " = " + crystals);
+        LOGGER.info("Проверка количества кристаллов прошла успешно после покупки малого набора: " + crystalsAfterPay
+                + " = " + crystals);
         Assert.assertEquals(coinsAfterPay, coins);
-        LOGGER.info("Проверка количества монет прошла успешно после покупки малого набора: " + coinsAfterPay + " = " + coins);
+        LOGGER.info("Проверка количества монет прошла успешно после покупки малого набора: " + coinsAfterPay + " = "
+                + coins);
 
         LOGGER.info("Количество кристаллов после покупки малого набора: " + crystalsAfterPay);
-        LOGGER.info("Количество монеток после покупки малого набора: " + coinsAfterPay);  
+        LOGGER.info("Количество монеток после покупки малого набора: " + coinsAfterPay);
         LOGGER.info("Элемент 'Малый набор осколков' виден");
 
         $x(ShopPageLocators.MEDIUM_PACK_NAME).shouldBe(visible);
@@ -87,6 +96,7 @@ public class CheckingShopTest extends BaseTest {
         $x(ShopPageLocators.MEDIUM_PACK_DESC)
                 .shouldBe(visible)
                 .click();
+        sleep(3000);
         LOGGER.info("Элемент 'Средний набор осколков' виден");
         // Проверяем количество инвентаря после покупки среднего набора
         crystalsAfterPay = new BigDecimal($x(ShopPageLocators.COINS_ITEM_1).getText().replace(",", ""));
@@ -99,16 +109,18 @@ public class CheckingShopTest extends BaseTest {
         System.out.println("coins: " + coins);
 
         Assert.assertEquals(crystalsAfterPay, crystals);
-        LOGGER.info("Проверка количества кристаллов прошла успешно после покупки среднего набора: " + crystalsAfterPay + " = " + crystals);
+        LOGGER.info("Проверка количества кристаллов прошла успешно после покупки среднего набора: " + crystalsAfterPay
+                + " = " + crystals);
         Assert.assertEquals(coinsAfterPay, coins);
-        LOGGER.info("Проверка количества монет прошла успешно после покупки среднего набора: " + coinsAfterPay + " = " + coins);    
-        
+        LOGGER.info("Проверка количества монет прошла успешно после покупки среднего набора: " + coinsAfterPay + " = "
+                + coins);
 
         $x(ShopPageLocators.LARGE_PACK_NAME).shouldBe(visible);
         LOGGER.info("Элемент '3500 Осколков Вечности' виден");
         $x(ShopPageLocators.LARGE_PACK_DESC)
                 .shouldBe(visible)
                 .click();
+        sleep(3000);
         LOGGER.info("Элемент 'Большой набор осколков' виден");
         // Проверяем количество инвентаря после покупки большого набора
         crystalsAfterPay = new BigDecimal($x(ShopPageLocators.COINS_ITEM_1).getText().replace(",", ""));
@@ -121,15 +133,18 @@ public class CheckingShopTest extends BaseTest {
         System.out.println("coins: " + coins);
 
         Assert.assertEquals(crystalsAfterPay, crystals);
-        LOGGER.info("Проверка количества кристаллов прошла успешно после покупки большого набора: " + crystalsAfterPay + " = " + crystals);
+        LOGGER.info("Проверка количества кристаллов прошла успешно после покупки большого набора: " + crystalsAfterPay
+                + " = " + crystals);
         Assert.assertEquals(coinsAfterPay, coins);
-        LOGGER.info("Проверка количества монет прошла успешно после покупки большого набора: " + coinsAfterPay + " = " + coins);
+        LOGGER.info("Проверка количества монет прошла успешно после покупки большого набора: " + coinsAfterPay + " = "
+                + coins);
 
         $x(ShopPageLocators.HUGE_PACK_NAME).shouldBe(visible);
         LOGGER.info("Элемент '5500 Осколков Вечности' виден");
         $x(ShopPageLocators.HUGE_PACK_DESC)
                 .shouldBe(visible)
                 .click();
+        sleep(3000);
         LOGGER.info("Элемент 'Огромный набор осколков' виден");
         // Проверяем количество инвентаря после покупки огромного набора
         crystalsAfterPay = new BigDecimal($x(ShopPageLocators.COINS_ITEM_1).getText().replace(",", ""));
@@ -142,9 +157,11 @@ public class CheckingShopTest extends BaseTest {
         System.out.println("coins: " + coins);
 
         Assert.assertEquals(crystalsAfterPay, crystals);
-        LOGGER.info("Проверка количества кристаллов прошла успешно после покупки огромного набора: " + crystalsAfterPay + " = " + crystals);
+        LOGGER.info("Проверка количества кристаллов прошла успешно после покупки огромного набора: " + crystalsAfterPay
+                + " = " + crystals);
         Assert.assertEquals(coinsAfterPay, coins);
-        LOGGER.info("Проверка количества монет прошла успешно после покупки огромного набора: " + coinsAfterPay + " = " + coins);
+        LOGGER.info("Проверка количества монет прошла успешно после покупки огромного набора: " + coinsAfterPay + " = "
+                + coins);
 
         LOGGER.info("Количество кристаллов после покупки огромного набора: " + crystalsAfterPay);
         LOGGER.info("Количество монеток после покупки огромного набора: " + coinsAfterPay);
