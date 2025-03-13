@@ -53,11 +53,11 @@ public class BaseTest {
             sleep(2000);
             
             // Проверяем загрузку страницы чатов
-            $x("//div[contains(@class, 'chat-list')]")
+            $x("//div[contains(@class, 'chat-list')] | //div[contains(@class, 'chatlist-top has-contacts')]//ul")
                 .shouldBe(visible, Duration.ofSeconds(10));
             
             // Ищем бота по названию
-            $x("//span[text()='Зов Теней - Тест'] | //img[@alt='Зов Теней - Тест']/ancestor::a")
+            $x("//span[text()='Зов Теней - Тест']/ancestor::a | //img[@alt='Зов Теней - Тест']/ancestor::a")
                 .shouldBe(visible, Duration.ofSeconds(10))
                 .shouldBe(interactable, Duration.ofSeconds(10))
                 .click();
@@ -66,7 +66,7 @@ public class BaseTest {
             sleep(1000);
             
             // Теперь ищем кнопку игры
-            $x("//span[text()='Профиль']")
+            $x("//span[text()='Профиль'] | //div[text()='Профиль']")
                 .shouldBe(visible, Duration.ofSeconds(10));
             LOGGER.info("Игра запущена.");
             
