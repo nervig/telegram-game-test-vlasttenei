@@ -1,5 +1,7 @@
 package com.vlasttenei.telegram.tests;
 
+import static com.codeborne.selenide.Selenide.sleep;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,10 +27,7 @@ public class TelegramWebTest extends BaseTest {
     public TelegramWebTest() {
     }
 
-    @Test(
-            priority = 1,
-            description = "Авторизация в Telegram Web"
-    )
+    @Test(priority = 1, description = "Авторизация в Telegram Web")
     public void loginToTelegramWeb() throws InterruptedException {
         driver.get("https://web.telegram.org/");
         LOGGER.info("Открыли Telegram Web.");
@@ -42,7 +41,8 @@ public class TelegramWebTest extends BaseTest {
 
             WebElement phoneInput;
             try {
-                phoneInput = (WebElement)wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[text()='Log in by phone Number' or span[text()='Log in by phone Number']]")));
+                phoneInput = (WebElement) wait.until(ExpectedConditions.elementToBeClickable(By
+                        .xpath("//button[text()='Log in by phone Number' or span[text()='Log in by phone Number']]")));
                 phoneInput.click();
                 LOGGER.info("Нажата кнопка 'Log in by phone Number'.");
             } catch (Exception var6) {
@@ -50,13 +50,33 @@ public class TelegramWebTest extends BaseTest {
                 return;
             }
 
-            phoneInput = (WebElement)wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//input[@id='sign-in-phone-number'] | //label[span[text()='Phone Number']]/preceding-sibling::div[contains(@class, 'input-field-input')]")));
-            phoneInput.sendKeys(new CharSequence[]{"+9604771761"});
+            phoneInput = (WebElement) wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath(
+                            "//input[@id='sign-in-phone-number'] | //label[span[text()='Phone Number']]/preceding-sibling::div[contains(@class, 'input-field-input')]")));
+            
+            // Проверяем наличие префикса +7
+            String currentValue = phoneInput.getText();
+            if (!currentValue.contains("+7")) {
+                phoneInput.clear();
+                phoneInput.sendKeys("+7");
+            }
+            
+            phoneInput.sendKeys("9604771761");
             LOGGER.info("Введён номер телефона.");
-            WebElement nextButton = driver.findElement(By.xpath("//button[contains(@class,'Button smaller primary')] | //button[.//span[text()='Next']]"));
+            
+            WebElement nextButton = driver.findElement(
+                    By.xpath("//button[contains(@class,'Button smaller primary')] | //button[.//span[text()='Next']]"));
             nextButton.click();
             LOGGER.info("Нажата кнопка 'Далее'.");
+
+            sleep(5);
+            // Проверяем, что появилось поле для ввода кода
+            WebElement codeInput = (WebElement) wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//div[contains(@class, 'input-field')]//input | //input[@id='sign-in-code']")));
+            if (!codeInput.isDisplayed()) {
+                LOGGER.severe("❌ Поле для ввода кода не отображается!");
+                return;
+            }
 
             try {
                 Thread.sleep(15000L);
@@ -67,7 +87,7 @@ public class TelegramWebTest extends BaseTest {
             if (this.isLoggedIn()) {
                 LOGGER.info("✅ Авторизация успешна. Сохраняем cookies.");
                 this.saveCookies();
-                
+
                 try {
                     CheckingCatalogTest catalogTest = new CheckingCatalogTest();
                     catalogTest.startGame1();
@@ -85,7 +105,8 @@ public class TelegramWebTest extends BaseTest {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10L));
 
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Зов Теней - Тест'] | //img[@alt='Зов Теней - Тест']")));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//span[text()='Зов Теней - Тест'] | //img[@alt='Зов Теней - Тест']")));
             return true;
         } catch (Exception var3) {
             LOGGER.log(Level.WARNING, "Элемент чата не найден, пользователь не авторизован.", var3);
@@ -102,15 +123,16 @@ public class TelegramWebTest extends BaseTest {
             try {
                 Iterator var3 = driver.manage().getCookies().iterator();
 
-                while(true) {
+                while (true) {
                     if (!var3.hasNext()) {
                         LOGGER.info("✅ Cookies сохранены.");
                         break;
                     }
 
-                    Cookie cookie = (Cookie)var3.next();
+                    Cookie cookie = (Cookie) var3.next();
                     String var10001 = cookie.getName();
-                    writer.write(var10001 + ";" + cookie.getValue() + ";" + cookie.getDomain() + ";" + cookie.getPath() + ";" + String.valueOf(cookie.getExpiry()) + ";" + cookie.isSecure());
+                    writer.write(var10001 + ";" + cookie.getValue() + ";" + cookie.getDomain() + ";" + cookie.getPath()
+                            + ";" + String.valueOf(cookie.getExpiry()) + ";" + cookie.isSecure());
                     writer.newLine();
                 }
             } catch (Throwable var6) {
@@ -140,10 +162,12 @@ public class TelegramWebTest extends BaseTest {
 
                 try {
                     String line;
-                    while((line = reader.readLine()) != null) {
+                    while ((line = reader.readLine()) != null) {
                         String[] parts = line.split(";");
                         if (parts.length >= 6) {
-                            Cookie cookie = new Cookie(parts[0], parts[1], parts[2], parts[3], "null".equals(parts[4]) ? null : new Date(parts[4]), Boolean.parseBoolean(parts[5]));
+                            Cookie cookie = new Cookie(parts[0], parts[1], parts[2], parts[3],
+                                    "null".equals(parts[4]) ? null : new Date(parts[4]),
+                                    Boolean.parseBoolean(parts[5]));
                             driver.manage().addCookie(cookie);
                         }
                     }
