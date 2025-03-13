@@ -6,7 +6,9 @@ import io.qameta.allure.*;
 import java.util.logging.Logger;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.Condition.*;
+import java.time.Duration;
 
+import com.codeborne.selenide.Selenide;
 import com.vlasttenei.telegram.api.ApiClient;
 import com.vlasttenei.telegram.pages.ShopPageLocators;
 import java.math.BigDecimal;
@@ -48,6 +50,10 @@ public class CheckingShopSellResourcesTest extends BaseTest {
         System.out.println("crystals: " + crystals);
         BigDecimal coins = new BigDecimal($x(ShopPageLocators.COINS_ITEM_2).getText().replace(",", ""));
         System.out.println("coins: " + coins);
+
+                // Сначала прокрутим страницу до конца, а потом найдем элемент
+        Selenide.executeJavaScript("window.scrollTo(0, document.body.scrollHeight)");
+        sleep(1000); 
         // Переходим на страницу продажи ресурсов
         $x(ShopPageLocators.SELL_RESOURCES_BUTTON)
                 .shouldBe(visible)
@@ -95,5 +101,19 @@ public class CheckingShopSellResourcesTest extends BaseTest {
         Assert.assertEquals(crystalsAfterPay, crystals);
         LOGGER.info("Проверка количества кристаллов прошла успешно после продажи Гибельсвета: " + crystalsAfterPay
                 + " = " + crystals);
+
+        // Переключаемся обратно на основной контент
+        switchTo().defaultContent();
+        LOGGER.info("Переключились на основной контент");
+
+        sleep(2000); // Даем время на переключение
+
+        // Нажимаем на кнопку закрытия магазина
+        $x(ShopPageLocators.CLOSE_BUTTON_SHOP_PAGE)
+                .shouldBe(visible, Duration.ofSeconds(10))
+                .shouldBe(interactable, Duration.ofSeconds(10))
+                .scrollIntoView(true)
+                .click();
+        LOGGER.info("Нажали на кнопку закрытия магазина");
     }
 }
