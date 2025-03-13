@@ -5,13 +5,15 @@ public class ShopPageLocators {
     public static final String SHOP_BUTTON = "//span[contains(text(), 'Лавка ❘←')]/ancestor::button";
     
     // Game iframe
-    public static final String GAME_IFRAME = "//iframe[contains(@title, 'Зов Теней - Тест Web App')]";
+    public static final String GAME_IFRAME = "//iframe[contains(@title, 'Зов Теней - Тест Web App')] | //iframe";
     // Sell resources button
     public static final String SELL_RESOURCES_BUTTON = "//button[contains(@style, 'background-image') and contains(@style, 'c6230e0523.png')]";
     // Sell button
     public static final String SELL_BUTTON = "//button[text()='Продать']";
     // Back button in resources section
     public static final String BACK_BUTTON_RESOURCES_SECTION = "//h2[contains(text(), 'На продажу')]/preceding::button[1]";
+    // Close button in shop page
+    public static final String CLOSE_BUTTON_SHOP_PAGE = "//button[contains(@class, 'BrowserHeaderButton')][1]";
 
     // Sell resources section
     public static final String SELL_RESOURCES_SECTION_ELIXIR = "//button[text()='Эликсиры']";
