@@ -165,5 +165,19 @@ public class CheckingShopTest extends BaseTest {
 
         LOGGER.info("Количество кристаллов после покупки огромного набора: " + crystalsAfterPay);
         LOGGER.info("Количество монеток после покупки огромного набора: " + coinsAfterPay);
+
+                // Переключаемся обратно на основной контент
+        switchTo().defaultContent();
+        LOGGER.info("Переключились на основной контент");
+
+        sleep(2000); // Даем время на переключение
+
+        // Нажимаем на кнопку закрытия магазина
+        $x(ShopPageLocators.CLOSE_BUTTON_SHOP_PAGE)
+                .shouldBe(visible, Duration.ofSeconds(10))
+                .shouldBe(interactable, Duration.ofSeconds(10))
+                .scrollIntoView(true)
+                .click();
+        LOGGER.info("Нажали на кнопку закрытия магазина");
     }
 }
