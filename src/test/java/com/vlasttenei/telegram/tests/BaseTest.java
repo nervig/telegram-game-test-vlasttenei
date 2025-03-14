@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import com.vlasttenei.telegram.driver.WebDriverSingleton;
 import io.qameta.allure.Step;
 import io.qameta.allure.Attachment;
+import com.vlasttenei.telegram.pages.BasePageLocators;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
@@ -21,6 +22,7 @@ import java.time.Duration;
 public class BaseTest {
     protected static WebDriver driver;
     private static final Logger LOGGER = Logger.getLogger(BaseTest.class.getName());
+    private static boolean isDriverInitialized = false;
 
     @BeforeSuite
     public void setUpSuite() {
@@ -34,9 +36,12 @@ public class BaseTest {
     @BeforeMethod
     @Step("Инициализация драйвера и подготовка к тесту")
     public void setUp() {
-        LOGGER.info("Инициализация WebDriver...");
-        driver = WebDriverSingleton.getDriver();
-        WebDriverRunner.setWebDriver(driver);
+        if (!isDriverInitialized) {
+            LOGGER.info("Инициализация WebDriver...");
+            driver = WebDriverSingleton.getDriver();
+            WebDriverRunner.setWebDriver(driver);
+            isDriverInitialized = true;
+        }
         
         // Проверяем и восстанавливаем связь Selenide с DOM
         try {
@@ -53,11 +58,11 @@ public class BaseTest {
             sleep(2000);
             
             // Проверяем загрузку страницы чатов
-            $x("//div[contains(@class, 'chat-list')] | //div[contains(@class, 'chatlist-top has-contacts')]//ul")
+            $x(BasePageLocators.CHAT_LIST)
                 .shouldBe(visible, Duration.ofSeconds(10));
             
             // Ищем бота по названию
-            $x("//span[text()='Зов Теней - Тест']/ancestor::a | //img[@alt='Зов Теней - Тест']/ancestor::a")
+            $x(BasePageLocators.BOT_CHAT)
                 .shouldBe(visible, Duration.ofSeconds(10))
                 .shouldBe(interactable, Duration.ofSeconds(10))
                 .click();
@@ -66,7 +71,7 @@ public class BaseTest {
             sleep(1000);
             
             // Теперь ищем кнопку игры
-            $x("//span[text()='Профиль'] | //div[text()='Профиль']")
+            $x(BasePageLocators.PROFILE_BUTTON)
                 .shouldBe(visible, Duration.ofSeconds(10));
             LOGGER.info("Игра запущена.");
             
