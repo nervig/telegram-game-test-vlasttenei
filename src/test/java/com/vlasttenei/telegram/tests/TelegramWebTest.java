@@ -1,6 +1,7 @@
 package com.vlasttenei.telegram.tests;
 
 import static com.codeborne.selenide.Selenide.sleep;
+import com.vlasttenei.telegram.pages.BasePageLocators;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,7 +28,7 @@ public class TelegramWebTest extends BaseTest {
     public TelegramWebTest() {
     }
 
-    @Test(priority = 1, description = "Авторизация в Telegram Web")
+    @Test(priority = 1, description = "Авторизация в Telegram Web", groups = {"auth", "TC-1"})
     public void loginToTelegramWeb() throws InterruptedException {
         driver.get("https://web.telegram.org/");
         LOGGER.info("Открыли Telegram Web.");
@@ -42,7 +43,7 @@ public class TelegramWebTest extends BaseTest {
             WebElement phoneInput;
             try {
                 phoneInput = (WebElement) wait.until(ExpectedConditions.elementToBeClickable(By
-                        .xpath("//button[text()='Log in by phone Number' or span[text()='Log in by phone Number']]")));
+                        .xpath(BasePageLocators.LOGIN_BY_PHONE_BUTTON)));
                 phoneInput.click();
                 LOGGER.info("Нажата кнопка 'Log in by phone Number'.");
             } catch (Exception var6) {
@@ -51,8 +52,7 @@ public class TelegramWebTest extends BaseTest {
             }
 
             phoneInput = (WebElement) wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    By.xpath(
-                            "//input[@id='sign-in-phone-number'] | //label[span[text()='Phone Number']]/preceding-sibling::div[contains(@class, 'input-field-input')]")));
+                    By.xpath(BasePageLocators.PHONE_INPUT)));
             
             // Проверяем наличие префикса +7
             String currentValue = phoneInput.getText();
@@ -65,14 +65,14 @@ public class TelegramWebTest extends BaseTest {
             LOGGER.info("Введён номер телефона.");
             
             WebElement nextButton = driver.findElement(
-                    By.xpath("//button[contains(@class,'Button smaller primary')] | //button[.//span[text()='Next']]"));
+                    By.xpath(BasePageLocators.NEXT_BUTTON));
             nextButton.click();
             LOGGER.info("Нажата кнопка 'Далее'.");
 
             sleep(5);
             // Проверяем, что появилось поле для ввода кода
             WebElement codeInput = (WebElement) wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    By.xpath("//div[contains(@class, 'input-field')]//input | //input[@id='sign-in-code']")));
+                    By.xpath(BasePageLocators.CODE_INPUT)));
             if (!codeInput.isDisplayed()) {
                 LOGGER.severe("❌ Поле для ввода кода не отображается!");
                 return;
@@ -106,7 +106,7 @@ public class TelegramWebTest extends BaseTest {
 
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    By.xpath("//span[text()='Зов Теней - Тест'] | //img[@alt='Зов Теней - Тест']")));
+                    By.xpath(BasePageLocators.BOT_CHAT)));
             return true;
         } catch (Exception var3) {
             LOGGER.log(Level.WARNING, "Элемент чата не найден, пользователь не авторизован.", var3);
