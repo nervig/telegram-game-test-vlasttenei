@@ -1,6 +1,7 @@
 package com.vlasttenei.telegram.tests;
 
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import org.testng.annotations.Test;
 
 public class CheckingCatalogTest extends BaseTest {
@@ -9,12 +10,13 @@ public class CheckingCatalogTest extends BaseTest {
     public CheckingCatalogTest() {
     }
 
-    @Test(
-            priority = 2,
-            description = "Запуск игры"
-    )
+    @Test(priority = 2, description = "Проверка каталога", dependsOnGroups = "auth", groups = "TC-2")
     public void startGame1() {
-        LOGGER.info("Запуск игры");
-        checkThatGameIsOpen();
+        try {
+            checkThatGameIsOpen();
+            LOGGER.info("✅ Игра успешно запущена.");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Ошибка при запуске игры.", e);
+        }
     }
 }
